@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="header">
+    
+        <div class="rightHeader">
+          <span class="cartIconWrap">
+            <img class="cartIcon" src="images/cart.png" alt="" />
+            <span>0</span>
+          </span>
+        </div>
+
+      </div>
+    
+  
+
+    <div class="featured container">
+      <h2 class="featuredHeader">Fetured Items</h2>
+      <div class="featuredTitle">
+        Shop for items based on what we featured in this week
+      </div>
+
+      <div class="featuredItems"></div>
+
+      
+      <div class="basket hidden">
+        <div class="basketRow basketHeader">
+          
+        <div class="basketList"> 
+           <div class="basketTotal">
+          <span class="basketTotalValue"></span></div>
+        
+        </div>
+            </div>
+            
+        </div>
+      
+
+    
+    <script src="data.js"></script>
+    <script src="products.js"></script>
+    
+    <script>
+
+ const basket = {};
+
+
+const products = getProductsObject();
+
+
+const basketEl = document.querySelector(".basket");
+const basketListEl = document.querySelector(".basketList");
+const basketCounterEl = document.querySelector(".cartIconWrap span");
+const basketTotalValueEl = document.querySelector(".basketTotalValue");
+document.querySelector(".cartIconWrap").addEventListener("click", () => {
+  basketEl.classList.toggle("hidden");
+});
+
+
+document.querySelector(".featuredItems").addEventListener("click", (event) => {
+  
+  const addToCartEl = event.target.closest(".addToCart");
+  if (!addToCartEl) {
+    return;
+  }
+  addToBasket(addToCartEl.dataset.id);
+  renderBasketContent();
+});
+
+basketEl.addEventListener("click", (event) => {
+  if (!event.target.classList.contains("productRemove")) {
+    return;
+  }
+  removeFromBasket(event.target.closest(".basketRow").dataset.id);
+  renderBasketContent();
+});
+
+function addToBasket(id) {
+
+  if (!(id in basket)) {
+    basket[id] = {
+      id: id,
+      name: products[id].name,
+      price: products[id].price,
+      color: products[id].color,
+      size: products[id].size,
+      count: 0,
+      img: products[id].img
+    };
+  }
+  basket[id].count++;
+}
+
+function removeFromBasket(id) {
+  if (basket[id].count <= 1) {
+    delete basket[id];
+  } else {
+    basket[id].count--;
+  }
+}
+
+function renderBasketContent() {
+
+  basketListEl.innerHTML = Object.values(basket).reduce(
+    (acc, product) => acc + getBasketProductMarkup(product),
+    ""
+  );
+  basketCounterEl.textContent = getTotalBasketCount().toString();
+  basketTotalValueEl.textContent = getTotalBasketPrice().toFixed(2);
+}
+
+function getTotalBasketCount() {
+  return Object.values(basket).reduce((acc, product) => acc + product.count, 0);
+}
+
+
+function getBasketProductMarkup(product) {
+  return `
+  <h2 class ="h_Cartitems">Cart Items</h2>
+  <div class = "Cart_Items"> 
+    <div class="basketRow" data-id="${product.id}">
+
+      <img src=${product.img} alt="" />
+      <div class="basketRow_text">
+        <div class = "name_products">
+          <div>${product.name}</div>
+        <div><button class="productRemove">×</button></div>
+      
+      </div>
+         <div> Price: <span class = "product_price">${product.price}  $ </span></div>
+        <div>Color: ${product.color} </div>
+        <div>Size: ${product.size} </div>
+        <span class="productCount">Quantity: ${product.count}</span> шт.<br>
+        
+      
+      
+    </div>
+      </div>
+    </div>
+    </div>
+  `;
+}
+
+
+    </script>
+  </body>
+</html>
